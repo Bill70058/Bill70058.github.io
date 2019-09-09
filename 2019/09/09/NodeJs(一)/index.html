@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+
+
+
+
+
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=2">
+<meta name="theme-color" content="#222">
+<meta name="generator" content="Hexo 3.9.0">
+  <link rel="apple-touch-icon" sizes="180x180" href="/images/apple-touch-icon-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="32x32" href="/images/favicon-32x32-next.png?v=7.4.0">
+  <link rel="icon" type="image/png" sizes="16x16" href="/images/favicon-16x16-next.png?v=7.4.0">
+  <link rel="mask-icon" href="/images/logo.svg?v=7.4.0" color="#222">
+
+<link rel="stylesheet" href="/css/main.css?v=7.4.0">
+
+
+<link rel="stylesheet" href="/lib/font-awesome/css/font-awesome.min.css?v=4.7.0">
+  <link rel="stylesheet" href="/lib/pace/pace-theme-minimal.min.css?v=1.0.2">
+  <script src="/lib/pace/pace.min.js?v=1.0.2"></script>
+
+
+<script id="hexo-configurations">
+  var NexT = window.NexT || {};
+  var CONFIG = {
+    root: '/',
+    scheme: 'Gemini',
+    version: '7.4.0',
+    exturl: false,
+    sidebar: {"position":"left","display":"post","offset":12,"onmobile":false},
+    copycode: {"enable":false,"show_result":false,"style":null},
+    back2top: {"enable":true,"sidebar":false,"scrollpercent":false},
+    bookmark: {"enable":false,"color":"#222","save":"auto"},
+    fancybox: false,
+    mediumzoom: false,
+    lazyload: false,
+    pangu: false,
+    algolia: {
+      appID: '',
+      apiKey: '',
+      indexName: '',
+      hits: {"per_page":10},
+      labels: {"input_placeholder":"Search for Posts","hits_empty":"We didn't find any results for the search: ${query}","hits_stats":"${hits} results found in ${time} ms"}
+    },
+    localsearch: {"enable":false,"trigger":"auto","top_n_per_article":1,"unescape":false,"preload":false},
+    path: '',
+    motion: {"enable":true,"async":false,"transition":{"post_block":"fadeIn","post_header":"slideDownIn","post_body":"slideDownIn","coll_header":"slideLeftIn","sidebar":"slideUpIn"}},
+    translation: {
+      copy_button: '复制',
+      copy_success: '复制成功',
+      copy_failure: '复制失败'
+    },
+    sidebarPadding: 40
+  };
+</script>
+
+  <meta name="description" content="Ajax 介绍 在node.js中前后台交互数据经常会用到这个东西，Ajax不是新的编程语言，而是一种使用现有标准的新方法，他可以实现不刷新网页部分更新数据。 Ajax数据格式 ajax封装使用封装Ajax需要了解什么是XMLHttpRequest；">
+<meta name="keywords" content="前端,NodeJs">
+<meta property="og:type" content="article">
+<meta property="og:title" content="NodeJs(一) -- 入门">
+<meta property="og:url" content="http://yoursite.com/2019/09/09/NodeJs(一)/index.html">
+<meta property="og:site_name" content="林泽荣的个人博客">
+<meta property="og:description" content="Ajax 介绍 在node.js中前后台交互数据经常会用到这个东西，Ajax不是新的编程语言，而是一种使用现有标准的新方法，他可以实现不刷新网页部分更新数据。 Ajax数据格式 ajax封装使用封装Ajax需要了解什么是XMLHttpRequest；">
+<meta property="og:locale" content="zh-CN">
+<meta property="og:image" content="http://yoursite.com/img/bVbtJpn">
+<meta property="og:updated_time" content="2019-09-09T06:35:29.252Z">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:title" content="NodeJs(一) -- 入门">
+<meta name="twitter:description" content="Ajax 介绍 在node.js中前后台交互数据经常会用到这个东西，Ajax不是新的编程语言，而是一种使用现有标准的新方法，他可以实现不刷新网页部分更新数据。 Ajax数据格式 ajax封装使用封装Ajax需要了解什么是XMLHttpRequest；">
+<meta name="twitter:image" content="http://yoursite.com/img/bVbtJpn">
+  <link rel="canonical" href="http://yoursite.com/2019/09/09/NodeJs(一)/">
+
+
+<script id="page-configurations">
+  // https://hexo.io/docs/variables.html
+  CONFIG.page = {
+    sidebar: "",
+    isHome: false,
+    isPost: true,
+    isPage: false,
+    isArchive: false
+  };
+</script>
+
+  <title>NodeJs(一) -- 入门 | 林泽荣的个人博客</title>
+  
+
+
+
+
+
+
+
+
+  <noscript>
+  <style>
+  .use-motion .brand,
+  .use-motion .menu-item,
+  .sidebar-inner,
+  .use-motion .post-block,
+  .use-motion .pagination,
+  .use-motion .comments,
+  .use-motion .post-header,
+  .use-motion .post-body,
+  .use-motion .collection-header { opacity: initial; }
+
+  .use-motion .logo,
+  .use-motion .site-title,
+  .use-motion .site-subtitle {
+    opacity: initial;
+    top: initial;
+  }
+
+  .use-motion .logo-line-before i { left: initial; }
+  .use-motion .logo-line-after i { right: initial; }
+  </style>
+</noscript>
+
+</head>
+
+<body itemscope itemtype="http://schema.org/WebPage" lang="zh-CN">
+  <div class="container use-motion">
+    <div class="headband"></div>
+  <a href="https://github.com/Bill70058" class="github-corner" aria-label="View source on GitHub"><svg width="80" height="80" viewBox="0 0 250 250" style="fill:#151513; color:#fff; position: absolute; top: 0; border: 0; right: 0;" aria-hidden="true"><path d="M0,0 L115,115 L130,115 L142,142 L250,250 L250,0 Z"></path><path d="M128.3,109.0 C113.8,99.7 119.0,89.6 119.0,89.6 C122.0,82.7 120.5,78.6 120.5,78.6 C119.2,72.0 123.4,76.3 123.4,76.3 C127.3,80.9 125.5,87.3 125.5,87.3 C122.9,97.6 130.6,101.9 134.4,103.2" fill="currentColor" style="transform-origin: 130px 106px;" class="octo-arm"></path><path d="M115.0,115.0 C114.9,115.1 118.7,116.5 119.8,115.4 L133.7,101.6 C136.9,99.2 139.9,98.4 142.2,98.6 C133.8,88.0 127.5,74.4 143.8,58.0 C148.5,53.4 154.0,51.2 159.7,51.0 C160.3,49.4 163.2,43.6 171.4,40.1 C171.4,40.1 176.1,42.5 178.8,56.2 C183.1,58.6 187.2,61.8 190.9,65.4 C194.5,69.0 197.7,73.2 200.1,77.6 C213.8,80.2 216.3,84.9 216.3,84.9 C212.7,93.1 206.9,96.0 205.4,96.6 C205.1,102.4 203.0,107.8 198.3,112.5 C181.9,128.9 168.3,122.5 157.7,114.1 C157.9,116.9 156.7,120.9 152.7,124.9 L141.0,136.5 C139.8,137.7 141.6,141.9 141.8,141.8 Z" fill="currentColor" class="octo-body"></path></svg></a><style>.github-corner:hover .octo-arm{animation:octocat-wave 560ms ease-in-out}@keyframes octocat-wave{0%,100%{transform:rotate(0)}20%,60%{transform:rotate(-25deg)}40%,80%{transform:rotate(10deg)}}@media (max-width:500px){.github-corner:hover .octo-arm{animation:none}.github-corner .octo-arm{animation:octocat-wave 560ms ease-in-out}}</style>
+
+
+    <header id="header" class="header" itemscope itemtype="http://schema.org/WPHeader">
+      <div class="header-inner"><div class="site-brand-container">
+  <div class="site-meta">
+
+    <div>
+      <a href="/" class="brand" rel="start">
+        <span class="logo-line-before"><i></i></span>
+        <span class="site-title">林泽荣的个人博客</span>
+        <span class="logo-line-after"><i></i></span>
+      </a>
+    </div>
+  </div>
+
+  <div class="site-nav-toggle">
+    <button aria-label="切换导航栏">
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+      <span class="btn-bar"></span>
+    </button>
+  </div>
+</div>
+
+
+<nav class="site-nav">
+  
+  <ul id="menu" class="menu">
+      
+      
+      
+        
+        <li class="menu-item menu-item-home">
+      
+    
+
+    <a href="/" rel="section"><i class="menu-item-icon fa fa-fw fa-home"></i> <br>首页</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-about">
+      
+    
+
+    <a href="/about/" rel="section"><i class="menu-item-icon fa fa-fw fa-user"></i> <br>关于</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-tags">
+      
+    
+
+    <a href="/tags/" rel="section"><i class="menu-item-icon fa fa-fw fa-tags"></i> <br>标签</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-categories">
+      
+    
+
+    <a href="/categories/" rel="section"><i class="menu-item-icon fa fa-fw fa-th"></i> <br>分类</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-archives">
+      
+    
+
+    <a href="/archives/" rel="section"><i class="menu-item-icon fa fa-fw fa-archive"></i> <br>归档</a>
+
+  </li>
+      
+      
+      
+        
+        <li class="menu-item menu-item-schedule">
+      
+    
+
+    <a href="/schedule/" rel="section"><i class="menu-item-icon fa fa-fw fa-calendar"></i> <br>日程表</a>
+
+  </li>
+  </ul>
+
+</nav>
+</div>
+    </header>
+
+    
+  <div class="back-to-top">
+    <i class="fa fa-arrow-up"></i>
+    <span>0%</span>
+  </div>
+
+
+    <main id="main" class="main">
+      <div class="main-inner">
+        <div class="content-wrap">
+            
+
+          <div id="content" class="content">
+            
+
+  <div id="posts" class="posts-expand">
+      <article itemscope itemtype="http://schema.org/Article">
+  
+  
+  
+  <div class="post-block post">
+    <link itemprop="mainEntityOfPage" href="http://yoursite.com/2019/09/09/NodeJs(一)/">
+
+    <span hidden itemprop="author" itemscope itemtype="http://schema.org/Person">
+      <meta itemprop="name" content="Lin">
+      <meta itemprop="description" content="">
+      <meta itemprop="image" content="/images/头像.gif">
+    </span>
+
+    <span hidden itemprop="publisher" itemscope itemtype="http://schema.org/Organization">
+      <meta itemprop="name" content="林泽荣的个人博客">
+    </span>
+      <header class="post-header">
+        <h1 class="post-title" itemprop="name headline">NodeJs(一) -- 入门
+
+          
+        </h1>
+
+        <div class="post-meta">
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-calendar-o"></i>
+              </span>
+              <span class="post-meta-item-text">发表于</span>
+
+              
+                
+              
+
+              <time title="创建时间：2019-09-09 14:34:44 / 修改时间：14:35:29" itemprop="dateCreated datePublished" datetime="2019-09-09T14:34:44+08:00">2019-09-09</time>
+            </span>
+          
+            
+
+            
+          
+            <span class="post-meta-item">
+              <span class="post-meta-item-icon">
+                <i class="fa fa-folder-o"></i>
+              </span>
+              <span class="post-meta-item-text">分类于</span>
+              
+                <span itemprop="about" itemscope itemtype="http://schema.org/Thing"><a href="/categories/NodeJs/" itemprop="url" rel="index"><span itemprop="name">NodeJs</span></a></span>
+
+                
+                
+              
+            </span>
+          
+
+          
+
+        </div>
+      </header>
+
+    
+    
+    
+    <div class="post-body" itemprop="articleBody">
+
+      
+        <blockquote>
+<p>Ajax 介绍</p>
+</blockquote><p>在node.js中前后台交互数据经常会用到这个东西，Ajax不是新的编程语言，而是一种使用现有标准的新方法，他可以实现不刷新网页部分更新数据。</p><blockquote>
+<p>Ajax数据格式</p>
+</blockquote><p><a href="https://gitee.com/bill_k_lin/Node/tree/master" target="_blank" rel="noopener">ajax封装</a></p><p>使用封装Ajax需要了解什么是<strong>XMLHttpRequest</strong>；</p><a id="more"></a>
+
+
+
+
+<hr>
+<h4 id="什么是XMLHttpRequest"><a href="#什么是XMLHttpRequest" class="headerlink" title="什么是XMLHttpRequest"></a>什么是XMLHttpRequest</h4><p>   XMLHttpRequest 用于在后台与服务器交换数据。这意味着可以在不重新加载整个网页的情况下，对网页的某部分进行更新</p>
+<hr>
+<p>创建XMLHttpRequest对象实例：<br><code>var XMLHttpRequest=new XMLHttpRequest();</code></p>
+<blockquote>
+<p>Ajax的传输方式</p>
+</blockquote>
+<p>传输数据方式有两种，一种<strong>get</strong>，一种<strong>post</strong>。</p>
+<p><code>get: 地址栏 - 数据都可视， 不安全， 方便 可传输数据大小32kb</code><br><code>post: 加密  - 数据不可视，安全， 不方便 可传输数据大小2gb</code></p>
+<blockquote>
+<p>向后端发送数据</p>
+</blockquote>
+<h3 id="利用XMLHttpRequest对象的open方法"><a href="#利用XMLHttpRequest对象的open方法" class="headerlink" title="利用XMLHttpRequest对象的open方法"></a>利用XMLHttpRequest对象的open方法</h3><p>open方法用于解析数据传输方式，数据内容，是否异步调用</p>
+<h4 id="get方法"><a href="#get方法" class="headerlink" title="get方法"></a>get方法</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var XMLHttpRequest = new XMLHttpRequest();</span><br><span class="line">XMLHttpRequest.open(&apos;GET&apos;,&apos;数据&apos;,true);</span><br><span class="line">XMLHttpRequest.send();</span><br></pre></td></tr></table></figure>
+
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br></pre></td><td class="code"><pre><span class="line">var XMLHttpRequest = new XMLHttpRequest();</span><br><span class="line">XMLHttpRequest.open(&apos;POST&apos;,&apos;数据&apos;,true);</span><br><span class="line">XMLHttpReuqest.send();</span><br></pre></td></tr></table></figure>
+
+<hr>
+<p>异步 - True 或 False<br>同步：后台进程一步一步完成<br>异步：后台进程同时调用运行</p>
+<p>XMLHttpRequest的open方法第三个参数‘true’ or ‘false’就是选择是否异步，当然选择true啦，高效。</p>
+<figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br><span class="line">8</span><br><span class="line">9</span><br><span class="line">10</span><br></pre></td><td class="code"><pre><span class="line">XMLHttpRequest.onreadystatechange=function() &#123;</span><br><span class="line">            if(XMLHttpRequest.readyState == 4) &#123;</span><br><span class="line">                if(XMLHttpRequest.status &gt;= 200 &amp;&amp; XMLHttpRequest.status &lt; 300 || XMLHttpReuqest.status == 304) &#123;</span><br><span class="line">                    //console.log(XMLHttpRequest.responseText);</span><br><span class="line">                    json.success(XMLHttpReuqest.responseText);</span><br><span class="line">                &#125;else&#123;</span><br><span class="line">                    //console.log(&apos;服务器错误&apos;);</span><br><span class="line">                &#125;</span><br><span class="line">            &#125;</span><br><span class="line">        &#125;</span><br></pre></td></tr></table></figure>
+
+<p>onreadystatechange方法：当状态码改变时触发，<br>readyState 当前状态码</p>
+<h4 id="什么是状态码"><a href="#什么是状态码" class="headerlink" title="什么是状态码"></a>什么是状态码</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line">ajax状态码 - ajax readyState：</span><br><span class="line"></span><br><span class="line"> 0 - （未初始化）还没有调用send()方法</span><br><span class="line"> 1 - （载入）已调用send()方法，正在发送请求</span><br><span class="line"> 2 - （载入完成）send()方法执行完成，已经接收到全部响应内容</span><br><span class="line"> 3 - （交互）正在解析响应内容</span><br><span class="line"> 4 - （完成）响应内容解析完成，可以在客户端调用了</span><br></pre></td></tr></table></figure>
+
+<ul>
+<li>XMLHttpRequest.state<br>当前进程加载状态，例如404是无回应的，200是加载成功等<img src="/img/bVbtJpn" alt="图片描述"></li>
+</ul>
+<blockquote>
+<p>服务器响应</p>
+</blockquote>
+<p>如果服务器有内容响应也就是后端有数据返回前端则有两个XMLHttpRequest对象获取<strong>responseText</strong>，<strong>responseXML</strong>。<br>responseText返回字符串形式的数据<br>responseXML返回XML形式的数据</p>
+<h4 id="responseText-例子"><a href="#responseText-例子" class="headerlink" title="responseText 例子"></a>responseText 例子</h4><figure class="highlight plain"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br></pre></td><td class="code"><pre><span class="line">html:</span><br><span class="line">    &lt;div id=&quot;div1&quot;&gt;&lt;/div&gt;</span><br><span class="line">js:</span><br><span class="line">    var XMLHttpRequest = new XMLHttpRequest();</span><br><span class="line">    document.getElementById(&quot;div1&quot;).innerHTML=XMLHttpRequest.responseText;</span><br></pre></td></tr></table></figure>
+
+
+    </div>
+
+    
+    
+    
+        
+      
+
+      <footer class="post-footer">
+          
+            
+          
+          <div class="post-tags">
+            
+              <a href="/tags/前端/" rel="tag"># 前端</a>
+            
+              <a href="/tags/NodeJs/" rel="tag"># NodeJs</a>
+            
+          </div>
+        
+
+        
+
+          <div class="post-nav">
+            <div class="post-nav-next post-nav-item">
+              
+                <a href="/2019/09/09/微信小程序（二）/" rel="next" title="微信小程序(二)">
+                  <i class="fa fa-chevron-left"></i> 微信小程序(二)
+                </a>
+              
+            </div>
+
+            <span class="post-nav-divider"></span>
+
+            <div class="post-nav-prev post-nav-item">
+              
+                <a href="/2019/09/09/NodeJs(二)/" rel="prev" title="NodeJs(二) -- 使用">
+                  NodeJs(二) -- 使用 <i class="fa fa-chevron-right"></i>
+                </a>
+              
+            </div>
+          </div>
+        
+      </footer>
+    
+  </div>
+  
+  
+  
+  </article>
+
+  </div>
+
+
+          </div>
+          
+
+        </div>
+          
+  
+  <div class="sidebar-toggle">
+    <div class="sidebar-toggle-line-wrap">
+      <span class="sidebar-toggle-line sidebar-toggle-line-first"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-middle"></span>
+      <span class="sidebar-toggle-line sidebar-toggle-line-last"></span>
+    </div>
+  </div>
+
+  <aside class="sidebar">
+    <div class="sidebar-inner">
+        
+        
+        
+        
+      
+
+      <ul class="sidebar-nav motion-element">
+        <li class="sidebar-nav-toc">
+          文章目录
+        </li>
+        <li class="sidebar-nav-overview">
+          站点概览
+        </li>
+      </ul>
+
+      <!--noindex-->
+      <div class="post-toc-wrap sidebar-panel">
+          <div class="post-toc motion-element"><ol class="nav"><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是XMLHttpRequest"><span class="nav-number">1.</span> <span class="nav-text">什么是XMLHttpRequest</span></a></li></ol></li><li class="nav-item nav-level-3"><a class="nav-link" href="#利用XMLHttpRequest对象的open方法"><span class="nav-number"></span> <span class="nav-text">利用XMLHttpRequest对象的open方法</span></a><ol class="nav-child"><li class="nav-item nav-level-4"><a class="nav-link" href="#get方法"><span class="nav-number">1.</span> <span class="nav-text">get方法</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#什么是状态码"><span class="nav-number">2.</span> <span class="nav-text">什么是状态码</span></a></li><li class="nav-item nav-level-4"><a class="nav-link" href="#responseText-例子"><span class="nav-number">3.</span> <span class="nav-text">responseText 例子</span></a></li></ol></div>
+        
+      </div>
+      <!--/noindex-->
+
+      <div class="site-overview-wrap sidebar-panel">
+        <div class="site-author motion-element" itemprop="author" itemscope itemtype="http://schema.org/Person">
+    <img class="site-author-image" itemprop="image"
+      src="/images/头像.gif"
+      alt="Lin">
+  <p class="site-author-name" itemprop="name">Lin</p>
+  <div class="site-description" itemprop="description"></div>
+</div>
+  <nav class="site-state motion-element">
+      <div class="site-state-item site-state-posts">
+        
+          <a href="/archives/">
+        
+          <span class="site-state-item-count">15</span>
+          <span class="site-state-item-name">日志</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-categories">
+        
+          
+            <a href="/categories/">
+          
+        
+        <span class="site-state-item-count">5</span>
+        <span class="site-state-item-name">分类</span>
+        </a>
+      </div>
+    
+      
+      
+      <div class="site-state-item site-state-tags">
+        
+          
+            <a href="/tags/">
+          
+        
+        <span class="site-state-item-count">6</span>
+        <span class="site-state-item-name">标签</span>
+        </a>
+      </div>
+    
+  </nav>
+  <div class="links-of-author motion-element">
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://github.com/Bill70058" title="GitHub &rarr; https://github.com/Bill70058" rel="noopener" target="_blank"><i class="fa fa-fw fa-github"></i>GitHub</a>
+      </span>
+    
+      <span class="links-of-author-item">
+      
+      
+        
+      
+      
+        
+      
+        <a href="https://segmentfault.com/u/bill_5bac65cc7963b/articles" title="segmentfault &rarr; https://segmentfault.com/u/bill_5bac65cc7963b/articles" rel="noopener" target="_blank"><i class="fa fa-fw fa-globe"></i>segmentfault</a>
+      </span>
+    
+  </div>
+
+
+
+      </div>
+
+    </div>
+  </aside>
+  <div id="sidebar-dimmer"></div>
+
+
+      </div>
+    </main>
+
+    <footer id="footer" class="footer">
+      <div class="footer-inner">
+        <div class="copyright">&copy; <span itemprop="copyrightYear">2019</span>
+  <span class="with-love" id="animate">
+    <i class="fa fa-user"></i>
+  </span>
+  <span class="author" itemprop="copyrightHolder">Lin</span>
+</div>
+  <div class="powered-by">由 <a href="https://hexo.io" class="theme-link" rel="noopener" target="_blank">Hexo</a> 强力驱动 v3.9.0</div>
+  <span class="post-meta-divider">|</span>
+  <div class="theme-info">主题 – <a href="https://theme-next.org" class="theme-link" rel="noopener" target="_blank">NexT.Gemini</a> v7.4.0</div>
+
+        
+
+
+
+
+
+
+
+
+
+
+
+
+        
+      </div>
+    </footer>
+  </div>
+
+  
+
+
+    
+    
+  
+    
+    
+  
+    
+    
+  
+    
+  
+  <script color='0,0,255' opacity='0.5' zIndex='-1' count='99' src="/lib/canvas-nest/canvas-nest.min.js"></script>
+  <script src="/lib/anime.min.js?v=3.1.0"></script>
+  <script src="/lib/velocity/velocity.min.js?v=1.2.1"></script>
+  <script src="/lib/velocity/velocity.ui.min.js?v=1.2.1"></script>
+  <script defer src="/lib/three/three.min.js"></script>
+  <script defer src="/lib/three/three-waves.min.js"></script>
+  <script defer src="/lib/three/canvas_lines.min.js"></script>
+  <script defer src="/lib/three/canvas_sphere.min.js"></script>
+<script src="/js/utils.js?v=7.4.0"></script><script src="/js/motion.js?v=7.4.0"></script>
+<script src="/js/schemes/pisces.js?v=7.4.0"></script>
+
+<script src="/js/next-boot.js?v=7.4.0"></script>
+
+
+
+  
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+  
+
+  
+
+  
+
+</body>
+</html>
